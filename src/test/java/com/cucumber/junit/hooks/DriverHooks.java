@@ -1,8 +1,9 @@
 package com.cucumber.junit.hooks;
 
 import driver.SingletonDriver;
-import org.junit.After;
-import org.junit.Before;
+import io.cucumber.java.After;
+import io.cucumber.java.Before;
+
 
 public class DriverHooks {
     @Before

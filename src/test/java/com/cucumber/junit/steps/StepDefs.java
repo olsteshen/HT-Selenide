@@ -2,7 +2,6 @@ package com.cucumber.junit.steps;
 
 import com.codeborne.selenide.Selenide;
 import desktop.pages.*;
-import driver.SingletonDriver;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.Transpose;
 import io.cucumber.java.en.And;
@@ -10,31 +9,30 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.assertj.core.api.Assertions;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-
-import static com.codeborne.selenide.Selenide.*;
 
 import java.util.List;
 import java.util.Map;
 
+import static constants.Constants.INITIAL_HOME_PAGE;
+
 public class StepDefs {
-    WebDriver driver = SingletonDriver.getInstance();
-    HomePage homePageObject;
+    WebDriver driver;
+    HomePage homePageObject = new HomePage(driver);
     SearchResultsPage searchResultsPageObject;
     AccountPage accountPageObject;
     BasketPage basketPageObject;
     CheckoutPage checkoutPageObject;
 
-    @Given("^(?:Guest user|Customer) opens bookdepository site$")
+    @Given("^I open bookdepository site$")
     public void openSite() {
-        homePageObject = new HomePage(driver);
+        homePageObject.setPageUrl(INITIAL_HOME_PAGE);
     }
 
     @Given("I open the {string}")
     public void openPage(String pageName) {
         if(pageName.equals("Initial home page")){
-        homePageObject = new HomePage(driver);
+            homePageObject.setPageUrl(INITIAL_HOME_PAGE);
         }
     }
 
@@ -45,22 +43,20 @@ public class StepDefs {
 
     @Then("^the search results are displayed$")
     public void pageWithSearchResultsIsPresent() {
-        Assertions.assertThat(searchResultsPageObject.isSearchResultsPresent())
-                .overridingErrorMessage("Search results are not displayed")
-                .isTrue();
+        searchResultsPageObject.isSearchResultsPresent();
     }
 
-    @When("^clicks on the Sign (?:in|out) button on navigation bar$")
+    @When("^click on the Sign (?:in|out) link on navigation bar$")
     public void clickSigninButton() {
-        accountPageObject.isLoginTitleDisplayed();
+        accountPageObject = homePageObject.clickSignInLink();
     }
 
-    @When("^the user fills in the login and password$")
+    @When("^I fill in the login and password$")
     public void fillInCredentials() {
         accountPageObject.fillInSignInFields("olsteshen@example.com", "Temp12345");
     }
 
-    @Then("^the user is logged in$")
+    @Then("^I am logged in$")
     public void advancedSearchPageIsDisplayed() {
         accountPageObject.checkAccountPageURL();
     }
@@ -70,10 +66,12 @@ public class StepDefs {
         Selenide.clearBrowserCookies();
     }
 
-
     @And("Search results contain the following products")
     public void checkSearchResultsContainsProducts(List<String> expectedBookNames) {
-        Assertions.assertThat($$(By.xpath("//h3[@class='title']")).contains(expectedBookNames));
+        Assertions.assertThat(searchResultsPageObject.getBookTitleInResults())
+                .extracting(String::toString)
+                .as("Some of the books are not shown")
+                .containsAll(expectedBookNames);
     }
 
     @And("I apply the following search filters")
@@ -83,7 +81,10 @@ public class StepDefs {
 
     @Then("Search results contain only the following products")
     public void checkSearchResultsContainOnlyProducts(List<String> expectedOnlyBookNames) {
-        Assertions.assertThat($$(By.xpath("//h3[@class='title']")).containsAll(expectedOnlyBookNames));
+        Assertions.assertThat(searchResultsPageObject.getBookTitleInResults())
+                .extracting(String::toString)
+                .as("Search results are not as expected")
+                .containsExactlyElementsOf(expectedOnlyBookNames);
     }
 
     @Then("I am redirected to a {string}")
@@ -115,7 +116,6 @@ public class StepDefs {
         checkoutPageObject.checkErrorMessage(expectedErrors);
     }
 
-
     @And("Checkout order summary is as following:")
     public void checkOrderSummary(@Transpose Map<String, String> orderDetails) {
         checkoutPageObject.checkOrderSummary(orderDetails);
@@ -133,7 +133,7 @@ public class StepDefs {
 
     @Then("the following validation error messages are displayed on 'Payment' form:")
     public void checkValidationErrorMessage(String expectedError) {
-        Assertions.assertThat($(By.xpath("//div[@class='buynow-error-msg']")).getText().equals(expectedError));
+        checkoutPageObject.checkErrorMessageOnPayment(expectedError);
     }
 
     @When("I enter my card details")
@@ -153,6 +153,6 @@ public class StepDefs {
 
     @Then("there is no validation error messages displayed on 'Delivery Address' form")
     public void checkNoErrorInAddressForm() {
-        Assertions.assertThat($$(By.xpath("//div[@id='deliveryAddress']//div[@class='error-block']")).isEmpty());
+        checkoutPageObject.checkNoErrorMessagesOnDelivery();
     }
 }

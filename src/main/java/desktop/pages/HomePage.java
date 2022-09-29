@@ -1,23 +1,27 @@
 package desktop.pages;
 
 import abstractclasses.page.AbstractPage;
-import driver.SingletonDriver;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
-import static constants.Constants.INITIAL_HOME_PAGE;
-import static com.codeborne.selenide.Selenide.*;
-
 public class HomePage extends AbstractPage {
+    private static final By SIGN_IN_LINK = By.xpath("//a[@href='/account/login/to/account']");
+    private static final By SEARCH_FIELD = By.name("searchTerm");
+    private static final By SEARCH_BUTTON = By.className("header-search-btn");
 
-    public HomePage(WebDriver driver) {
+    public HomePage (WebDriver driver){
         super(driver);
-        SingletonDriver.getInstance().get(INITIAL_HOME_PAGE);
     }
 
     public SearchResultsPage enterSearchTerm(String searchTerm) {
-        $(By.name("searchTerm")).setValue(searchTerm).pressEnter();
+        setValueIntoInputField(SEARCH_FIELD, searchTerm);
+        clickElement(SEARCH_BUTTON);
         return new SearchResultsPage(driver);
+    }
+
+    public AccountPage clickSignInLink(){
+        clickElement(SIGN_IN_LINK);
+        return new AccountPage(driver);
     }
 
 }

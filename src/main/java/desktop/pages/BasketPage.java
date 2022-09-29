@@ -1,25 +1,21 @@
 package desktop.pages;
 
 import abstractclasses.page.AbstractPage;
-import driver.SingletonDriver;
 import io.cucumber.datatable.DataTable;
 import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.FindBy;
 
 import java.util.List;
 import java.util.Map;
 
 import static com.codeborne.selenide.Selenide.$;
-import static constants.Constants.*;
+import static constants.Constants.BASKET_PAGE_URL;
 
 
 public class BasketPage extends AbstractPage {
-    public BasketPage(WebDriver driver) {
+    public BasketPage(WebDriver driver){
         super(driver);
-        SingletonDriver.getInstance();
     }
 
     public void checkBasketPageURL(){

@@ -1,13 +1,12 @@
 package abstractclasses.page;
-
-
-import com.codeborne.selenide.WebDriverRunner;
+import driver.SingletonDriver;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-
+import org.openqa.selenium.WebElement;
+import static com.codeborne.selenide.Selenide.$;
 
 public abstract class AbstractPage {
-    protected WebDriver driver;
-    private String pageUrl;
+    protected WebDriver driver = SingletonDriver.getInstance();
     private String pageUrlPattern;
 
     public AbstractPage(WebDriver driver) {
@@ -15,11 +14,11 @@ public abstract class AbstractPage {
     }
 
     public String getPageUrl() {
-        return WebDriverRunner.getWebDriver().getCurrentUrl();
+        return SingletonDriver.getInstance().getCurrentUrl();
     }
 
     public void setPageUrl(String pageUrl) {
-        this.pageUrl = pageUrl;
+        SingletonDriver.getInstance().get(pageUrl);
     }
 
     public String setPageUrlPattern(String pageUrlPattern) {
@@ -28,5 +27,27 @@ public abstract class AbstractPage {
 
     public String getPageUrlPattern() {
         return pageUrlPattern;
+    }
+
+    protected void setValueIntoInputField(By element, String value){
+        $(element).setValue(value);
+    }
+
+    protected void clickElement(WebElement element){
+        $(element).click();
+    }
+    protected void clickElement(By element){
+        $(element).click();
+    }
+
+    protected Boolean isElementDisplayed(By element){
+        return $(element).exists();
+    }
+
+    protected void selectDropDownValue (By element, String value){
+        $(element).selectOption(value);
+    }
+    protected String getTextFromElement(By element){
+        return $(element).text();
     }
 }
