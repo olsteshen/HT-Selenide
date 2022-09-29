@@ -41,7 +41,7 @@ public abstract class AbstractPage {
     }
 
     protected Boolean isElementDisplayed(By element){
-        return $(element).exists();
+        return $(element).isDisplayed();
     }
 
     protected void selectDropDownValue (By element, String value){

@@ -56,11 +56,7 @@ public class SearchResultsPage extends AbstractPage {
         return new BasketPage(driver);
     }
 
-    //What to do with deprecated stream?
     public List<String> getBookTitleInResults(){
-        return $$(BOOK_TITLE)
-                .stream()
-                .map(SelenideElement::getText)
-                .collect(Collectors.toList());
+        return $$(BOOK_TITLE).texts();
     }
 }
