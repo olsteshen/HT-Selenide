@@ -6,7 +6,7 @@ import org.openqa.selenium.WebElement;
 import static com.codeborne.selenide.Selenide.$;
 
 public abstract class AbstractPage {
-    protected WebDriver driver = SingletonDriver.getInstance();
+    protected WebDriver driver;
     private String pageUrlPattern;
 
     public AbstractPage(WebDriver driver) {
